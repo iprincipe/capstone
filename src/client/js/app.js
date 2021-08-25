@@ -17,13 +17,7 @@ console.log(`Your PIX API key is ${pixKey}`);
 let d = new Date();
 let newDate = d.getMonth() + 1 + '.' + d.getDate() + '.' + d.getFullYear();
 
-
-function newPage(e) {
-    e.preventDefault()
-    location.reload();
-}
-
-function generatePage(e) {
+async function generatePage(e) {
     e.preventDefault()
 
     /*Assign variables from UI*/
@@ -79,6 +73,11 @@ function generatePage(e) {
         .then(function (result) {
             updateUI(result);
         });
+}
+
+async function newPage(e) {
+    e.preventDefault()
+    location.reload();
 }
 
 function calcDays(end, start) {
@@ -176,4 +175,4 @@ const updateUI = async () => {
     }
 }
 
-export { generatePage, newPage, calcDays }
+export { generatePage, newPage }

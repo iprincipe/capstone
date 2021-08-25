@@ -1,23 +1,25 @@
-// Setup empty JS object to act as endpoint for all routes
-projectData = {};
-
 var path = require('path');
 
-//Set up Server
+const fetch = require('node-fetch');
 const express = require('express');
+const mockAPIResponse = require('./mockAPI.js');
+
+const bodyParser = require('body-parser');
+
+var cors = require('cors');
+
+const dotenv = require('dotenv');
+dotenv.config();
+
 const app = express();
 
-//Middleware
-const bodyParser = require('body-parser');
-const cors = require('cors');
-
 app.use(express.static('dist'));
-app.use(cors());
 
-const mockAPIResponse = require('./mockAPI.js');
+app.use(cors());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
 
 console.log(__dirname)
 
@@ -31,8 +33,8 @@ app.get("/test", function (req, res) {
 });
 
 app.get('/', function (req, res) {
-  //res.sendFile(path.resolve('dist/index.html'))
-  res.sendFile(path.resolve("src/client/views/index.html"));
+  res.sendFile(path.resolve('dist/index.html'))//For building with build-prod
+  //res.sendFile(path.resolve("src/client/views/index.html"));//For testing with build-dev
 })
 
 
@@ -59,5 +61,4 @@ app.post("/callAPI", async (req, res) => {
 
 	console.log(projectData);
   });
-  
-  
+
