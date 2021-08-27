@@ -3,7 +3,7 @@ import { generatePage } from './js/app';
 import { newPage } from './js/app';
 
 /*CSS*/
-import './styles/style.scss';
+//import './styles/style.scss';
 //might need to be commented out
 
 /*Submit event handler*/
