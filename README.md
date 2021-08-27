@@ -12,7 +12,7 @@ Project is created with:
 
 ##Files
 * client
-	**js
+	-js
 		+ app.js
 	-styles
 		+ style.scss
