@@ -1,6 +1,6 @@
 /* Global Variables */
-const geoURL = "http://api.geonames.org/searchJSON?";
-let geoHits = "&maxRows=1";
+const geoURL = "http://api.geonames.org/searchJSON?q=";
+let geoHits = "&maxRows=1&username=ivilledaprincipe";
 const geoKey = "7d25b97d22b8555d82fc4dee54fce27e";
 console.log(`Your GEO API key is ${geoKey}`);
 
@@ -26,52 +26,54 @@ async function generatePage(e) {
 
     let city = locArray[0];
     let country = locArray[1];
+    console.log(`${city},${country}`)
 
     /*Date Variables*/
     let departDate = new Date(document.getElementById("when").value);
-    let today = newDate;
+    let today = new Date();
+    console.log(`${departDate},${today}`)
 
-    let countdown = calcDays(departDate, today);
+    let countDays = calcDays(departDate, today);
+    console.log(countDays)
 
     let formData = {
         city: city,
         country: country,
-        countdown: countdown,
-        latitude,
-        longitude,
-        maxTemp,
-        minTemp,
-        description,
-        image
+        countdown: countDays
     };
+    console.log(formData)
 
-    //http://api.geonames.org/searchJSON?q=london&maxRows=10&username=demo
-    getGeo(`${geoURL}q=${city}${geoHits}&username=ivilledprincipe`)
-        .then(function (geoResult) {
-            formData[3] = geoResult[0]
-            formData[4] = geoResult[1]
-            console.log("getGeo: " + formData)
-        });
-    
-    //https://api.weatherbit.io/v2.0/forecast/daily?city=Raleigh,NC&key=API_KEY
-    getFore(`${weatherURL}lat=${formData[3]}&lon=${formData[4]}&key=${weatherKey}`)
-        .then(function (foreResult) {
-            formData[5] = foreResult[0]
-            formData[5] = foreResult[1]
-            formData[7] = foreResult[2]
-            console.log("getFore: " + formData)
-        });
 
     //"https://pixabay.com/api/?key=" + pixaKey + "&q=" + city + "&image_type=photo"
     getPic(`${pixabayURL}${pixKey}&q=${city}${pixabayImage}`)
         .then(function (imageUrl) {
-          formData[8] = imageUrl
-          console.log("getPic: " + formData)
-        });
+            formData.imageURL = imageUrl
+            console.log("getPic: " + Object.values(formData))
 
-    postData("http://localhost:8080/callAPI", formData)
-        .then(function (result) {
-            updateUI(result);
+            //http://api.geonames.org/searchJSON?q=london&maxRows=10&username=demo
+            getGeo(`${geoURL}${city}${geoHits}`)
+                .then(function (geoResult) {
+                    formData.latitude = geoResult[0]
+                    formData.longitude = geoResult[1]
+                    console.log("getGeo: " + Object.values(formData))
+
+                    //https://api.weatherbit.io/v2.0/forecast/daily?city=Raleigh,NC&key=API_KEY
+                    getFore(`${weatherURL}lat=${formData.latitude}&lon=${formData.longitude}&key=${weatherKey}`)
+                        .then(function (foreResult) {
+                            formData.max = foreResult[0]
+                            formData.min = foreResult[1]
+                            formData.description = foreResult[2]
+                            console.log("getFore: " + Object.values(formData))
+
+                            console.log("PostData")
+                            postData("http://localhost:8080/callAPI", formData)
+                                .then(function (result) {
+                                    console.log("updateUI")
+                                    console.log("result: " + result)
+                                    updateUI(result);
+                                });
+                        });
+                });
         });
 }
 
@@ -88,7 +90,10 @@ function calcDays(end, start) {
 const getGeo = async (geoNamesURL) => {
     const response = await fetch(geoNamesURL);
     try {
+        console.log("Getting Geo Data")
+
         let geoData = await response.json();
+
         const lat = geoData.geonames[0].lat;
         const lng = geoData.geonames[0].lng;
         const geoResult = [lat, lng];
@@ -102,12 +107,15 @@ const getGeo = async (geoNamesURL) => {
 const getFore = async (weatherBitURL) => {
     const response = await fetch(weatherBitURL);
     try {
-        let foredata = await response.json();
-        const max = foredata.data[0].max_temp;
+        console.log("Getting Forecast Data")
+
+        let foreData = await response.json();
+
+        const max = foreData.data[0].max_temp;
         console.log('max temp:' + max);
-        const min = foredata.data[0].low_temp;
+        const min = foreData.data[0].low_temp;
         console.log('min temp:' + min);
-        const desc = foredata.data[0].weather.description;
+        const desc = foreData.data[0].weather.description;
         console.log('desc:' + desc);
         const foreResult = [max, min, desc];
         return foreResult;
@@ -119,8 +127,11 @@ const getFore = async (weatherBitURL) => {
 const getPic = async (pixBayURL) => {
     const response = await fetch(pixBayURL);
     try {
+        console.log("Getting Image Data")
+
         let pixData = await response.json();
-        const imgUrl = pixData.hits[0].pageURL;
+
+        const imgUrl = pixData.hits[0].previewURL;
         console.log('imgUrl:' + imgUrl)
         return imgUrl;
     } catch (error) {
@@ -150,24 +161,21 @@ const postData = async (url = '', data = {}) => {
     }
 }
 
-const updateUI = async () => {
-    const request = await fetch('/all');
-    console.log('update');
+const updateUI = async (result) => {
+    console.log('update ====> ', result);
 
     try {
         //Fill elements with weather data to be displayed
-        const allData = await request.json();
+        const allData = result;
         document.getElementById('where').innerHTML = allData.city;
         document.getElementById('when').innerHTML = allData.date;
 
         let image = document.getElementById("img");
-        image.setAttribute('src', imageURL);
-        image.setAttribute('width', 500);
-        image.setAttribute('height', 500);
+        image.setAttribute('src', allData.image);
 
-        document.getElementById('countdown').innerHTML = allData.countdown;
-        document.getElementById('weather').innerHTML = "Typical Weather";
-        document.getElementById('temperature').innerHTML = "High: " + allData.max + " Low: " + allData.min;
+        document.getElementById('countdown').innerHTML = "Trip is "+ allData.countdown + " days away!";
+        document.getElementById('weather').innerHTML = "Typical Weather:";
+        document.getElementById('temperature').innerHTML = "High: " + allData.maxTemp + " Low: " + allData.minTemp;
         document.getElementById('description').innerHTML = allData.description;
 
     } catch (error) {

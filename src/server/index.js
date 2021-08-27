@@ -42,23 +42,24 @@ app.get('/all', function (req, res) {
     res.send(projectData);
 });
 
-
 app.post("/callAPI", async (req, res) => {
-    let newData = req.body;
+  let newData = req.body;
 	console.log(req.body);
+
 	let newEntry = {
-		city: newData.city,
+		    city: newData.city,
         country: newData.country,
         countdown: newData.countdown,
         latitude: newData.latitude,
         longitude: newData.longitude,
-        maxTemp: newData.maxTemp,
-        minTemp: newData.minTemp,
+        maxTemp: newData.max,
+        minTemp: newData.min,
         description: newData.description,
-        image: newData.image
+        image: newData.imageURL
 	}
 	projectData = newEntry;
-
+  
 	console.log(projectData);
+  res.send(projectData);
   });
 

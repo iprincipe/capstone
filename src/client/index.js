@@ -3,10 +3,11 @@ import { generatePage } from './js/app';
 import { newPage } from './js/app';
 
 /*CSS*/
-//import './styles/style.scss';
+import './styles/style.scss';
+//might need to be commented out
 
 /*Submit event handler*/
-document.querySelector("form").addEventListener("submit", generatePage);
+document.getElementById("generate").addEventListener("submit", generatePage);
 document.getElementById("reset").addEventListener("click", newPage);
 
 alert("I EXIST")

@@ -29,7 +29,7 @@
                 <div class="buttons">
                     <button id="generate" type="submit" onclick="return Client.generatePage(event)"
                         onsubmit="return Client.generatePage(event)"> Save </button>
-                    <button id="delete" type="submit" onclick="return Client.newPage(event)"
+                    <button id="reset" type="submit" onclick="return Client.newPage(event)"
                         onsubmit="return Client.newPage(event)">Remove</button>
                 </div>
                 </form>
@@ -45,9 +45,9 @@
     </div>
     <footer class="footer">
         <p>Author: Ilce Villeda-Principe</p>
-        <p>Credits:</p>
     </footer>
-    <script>// Check that service workers are supported
+    <script>
+    // Check that service workers are supported
         if ('serviceWorker' in navigator) {
             // Use the window load event to keep the page load performant
             window.addEventListener('load', () => {
