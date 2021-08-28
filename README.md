@@ -25,4 +25,3 @@ Project is created with:
 	
 
 ##Note Project created using past projects and the 'skeleton' code provided by Udacity.
-##Note style.scss seems to not work due to 'css loader' or sass-loader. Might be a problem on my end. I have been unable to resolve this problem.
